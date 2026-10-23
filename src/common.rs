@@ -2460,6 +2460,7 @@ pub fn rustdesk_interval(i: Interval) -> ThrottledInterval {
 }
 
 pub fn load_custom_client() {
+    apply_expert_remote_branding();
     #[cfg(debug_assertions)]
     if let Ok(data) = std::fs::read_to_string("./custom.txt") {
         read_custom_client(data.trim());
@@ -2479,6 +2480,25 @@ pub fn load_custom_client() {
         };
         read_custom_client(&data.trim());
     }
+}
+
+// Expert Remote: nome do app e servidor próprio (remoto.expert.app.br) embutidos na compilação.
+// RENDEZVOUS_SERVER / RS_PUB_KEY vêm dos segredos do GitHub Actions; sem eles, vale o padrão abaixo.
+// O nome não tem espaço porque vira o esquema de link do programa (<nome>://).
+fn apply_expert_remote_branding() {
+    let server = option_env!("RENDEZVOUS_SERVER")
+        .filter(|s| !s.is_empty())
+        .unwrap_or("remoto.expert.app.br");
+    let key = option_env!("RS_PUB_KEY")
+        .filter(|s| !s.is_empty())
+        .unwrap_or("y1yv7f25g8V9JHGEb5ciFQS5MPl8WNhMf3VtyMCWvWo=");
+    *config::APP_NAME.write().unwrap() = "ExpertRemote".to_owned();
+    let mut settings = config::OVERWRITE_SETTINGS.write().unwrap();
+    settings.insert(
+        keys::OPTION_CUSTOM_RENDEZVOUS_SERVER.to_owned(),
+        server.to_owned(),
+    );
+    settings.insert(keys::OPTION_KEY.to_owned(), key.to_owned());
 }
 
 fn read_custom_client_advanced_settings(
