@@ -135,9 +135,11 @@ jobs:
         shell: bash
         run: |
           sed -i '/dpiAware/d' res/manifest.xml
+          # o instalador copia a pasta como está e procura <APP_NAME>.exe (não renomeia)
+          mv ./rustdesk/rustdesk.exe ./rustdesk/ExpertRemote.exe
           pushd ./libs/portable
           pip3 install -r requirements.txt
-          python3 ./generate.py -f ../../rustdesk/ -o . -e ../../rustdesk/rustdesk.exe
+          python3 ./generate.py -f ../../rustdesk/ -o . -e ../../rustdesk/ExpertRemote.exe
           popd
           mkdir -p ./SignOutput
           mv ./target/release/rustdesk-portable-packer.exe ./SignOutput/ExpertRemote-${{ env.VERSION }}-x86_64.exe
