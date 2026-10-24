@@ -150,6 +150,13 @@ jobs:
           name: ExpertRemote-windows-x86_64
           path: ./SignOutput/ExpertRemote-*.exe
 
+      - name: Remove previous installer from release
+        continue-on-error: true
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release delete-asset expert-remote "ExpertRemote-${{ env.VERSION }}-x86_64.exe" -y --repo ${{ github.repository }}
+
       - name: Publish Release
         uses: softprops/action-gh-release@de2c0eb89ae2a093876385947365aca7b0e5f844 # v1
         with:
